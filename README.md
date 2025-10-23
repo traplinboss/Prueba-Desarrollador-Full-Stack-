@@ -210,18 +210,6 @@ Content-Type: application/json
 }
 ```
 
-## 🎨 Características del Frontend
-
-- ✅ Interfaz moderna y responsiva con Bootstrap 5
-- ✅ Validación de formularios en tiempo real
-- ✅ Validación de formato de correo electrónico
-- ✅ Modales para crear y editar usuarios
-- ✅ Confirmación antes de eliminar
-- ✅ Mensajes de éxito y error
-- ✅ Estados de carga y errores
-- ✅ Diseño con gradientes y animaciones suaves
-- ✅ Estadísticas en tiempo real
-
 ## 🐛 Solución de Problemas
 
 ### El backend no se conecta a PostgreSQL
