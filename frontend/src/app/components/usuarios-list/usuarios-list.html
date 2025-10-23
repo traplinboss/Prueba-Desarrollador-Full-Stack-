@@ -1,0 +1,297 @@
+<div class="container my-5">
+  <div class="card shadow-lg border-0 rounded-4">
+    <!-- Header con gradiente -->
+    <div class="card-header text-white p-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h3 class="mb-1 fw-bold">
+            <i class="bi bi-people-fill me-2"></i>Usuarios Registrados
+          </h3>
+          <p class="mb-0 opacity-75 small">Gestión de usuarios del sistema</p>
+        </div>
+        <div>
+          <button class="btn btn-light btn-sm rounded-pill px-4 me-2" (click)="abrirModalCrear()">
+            <i class="bi bi-plus-circle me-1"></i>Agregar Usuario
+          </button>
+          <button class="btn btn-outline-light btn-sm rounded-pill px-4" (click)="recargar()">
+            <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body p-4">
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="text-muted mt-3">Cargando usuarios...</p>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error && !isLoading" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        {{ error }}
+        <button type="button" class="btn-close" (click)="error = ''"></button>
+      </div>
+
+      <!-- Success Message -->
+      <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        {{ successMessage }}
+        <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="usuarios.length === 0 && !isLoading && !error" class="text-center py-5">
+        <i class="bi bi-inbox display-1 text-muted mb-3"></i>
+        <h5 class="text-muted">No hay usuarios registrados</h5>
+        <p class="text-muted small">Los usuarios aparecerán aquí cuando se registren</p>
+        <button class="btn btn-primary mt-3" (click)="abrirModalCrear()">
+          <i class="bi bi-plus-circle me-2"></i>Agregar Primer Usuario
+        </button>
+      </div>
+
+      <!-- Tabla de usuarios -->
+      <div class="table-responsive" *ngIf="usuarios.length > 0 && !isLoading">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr class="border-bottom border-2">
+              <th scope="col" class="text-muted fw-semibold py-3" style="width: 80px;">
+                <small>ID</small>
+              </th>
+              <th scope="col" class="text-muted fw-semibold py-3">
+                <small>NOMBRE COMPLETO</small>
+              </th>
+              <th scope="col" class="text-muted fw-semibold py-3">
+                <small>CORREO ELECTRÓNICO</small>
+              </th>
+              <th scope="col" class="text-muted fw-semibold py-3 text-center" style="width: 100px;">
+                <small>EDAD</small>
+              </th>
+              <th scope="col" class="text-muted fw-semibold py-3 text-center" style="width: 180px;">
+                <small>ACCIONES</small>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let usuario of usuarios; let i = index" class="border-bottom">
+              <td class="py-3">
+                <span class="badge bg-light text-dark rounded-pill px-3">
+                  #{{ usuario.id }}
+                </span>
+              </td>
+              <td class="py-3">
+                <div class="d-flex align-items-center">
+                  <div class="avatar-circle me-3">
+                    {{ usuario.nombre.charAt(0).toUpperCase() }}
+                  </div>
+                  <span class="fw-semibold text-dark">{{ usuario.nombre }}</span>
+                </div>
+              </td>
+              <td class="py-3">
+                <i class="bi bi-envelope me-2 text-muted"></i>
+                <span class="text-muted">{{ usuario.correo }}</span>
+              </td>
+              <td class="py-3 text-center">
+                <span class="badge bg-primary-soft text-primary rounded-pill px-3 py-2">
+                  {{ usuario.edad }} años
+                </span>
+              </td>
+              <td class="py-3 text-center">
+                <div class="btn-group" role="group">
+                  <button 
+                    class="btn btn-sm btn-outline-primary rounded-start" 
+                    (click)="editarUsuario(usuario)"
+                    title="Editar usuario">
+                    <i class="bi bi-pencil-square me-1"></i>Editar
+                  </button>
+                  <button 
+                    class="btn btn-sm btn-outline-danger rounded-end" 
+                    (click)="eliminarUsuario(usuario)"
+                    title="Eliminar usuario">
+                    <i class="bi bi-trash3 me-1"></i>Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Footer con estadísticas -->
+    <div class="card-footer bg-light border-0 p-4" *ngIf="usuarios.length > 0 && !isLoading">
+      <div class="row text-center">
+        <div class="col-md-4">
+          <div class="stat-card">
+            <i class="bi bi-people text-primary fs-4"></i>
+            <h4 class="mb-0 mt-2 fw-bold">{{ usuarios.length }}</h4>
+            <p class="text-muted small mb-0">Total Usuarios</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card">
+            <i class="bi bi-graph-up text-success fs-4"></i>
+            <h4 class="mb-0 mt-2 fw-bold">100%</h4>
+            <p class="text-muted small mb-0">Activos</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card">
+            <i class="bi bi-clock-history text-info fs-4"></i>
+            <h4 class="mb-0 mt-2 fw-bold">Hoy</h4>
+            <p class="text-muted small mb-0">Última actualización</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Creación -->
+<div class="modal fade" [class.show]="mostrarModalCrear" [style.display]="mostrarModalCrear ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <h5 class="modal-title">
+          <i class="bi bi-plus-circle me-2"></i>Agregar Nuevo Usuario
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModalCrear()"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form #formularioCrear="ngForm">
+          <div class="mb-3">
+            <label for="nombreNuevo" class="form-label fw-semibold">
+              <i class="bi bi-person me-2 text-primary"></i>Nombre Completo
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="nombreNuevo" 
+              [(ngModel)]="nuevoUsuario.nombre"
+              name="nombre"
+              placeholder="Ingrese el nombre completo"
+              required>
+          </div>
+          <div class="mb-3">
+            <label for="correoNuevo" class="form-label fw-semibold">
+              <i class="bi bi-envelope me-2 text-primary"></i>Correo Electrónico
+            </label>
+            <input 
+              type="email" 
+              class="form-control" 
+              [class.is-invalid]="correoInvalidoCrear"
+              id="correoNuevo" 
+              [(ngModel)]="nuevoUsuario.correo"
+              name="correo"
+              placeholder="ejemplo@correo.com"
+              (blur)="validarCorreoCrear()"
+              required>
+            <div class="invalid-feedback" *ngIf="correoInvalidoCrear">
+              Por favor ingresa un correo electrónico válido
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="edadNuevo" class="form-label fw-semibold">
+              <i class="bi bi-calendar me-2 text-primary"></i>Edad
+            </label>
+            <input 
+              type="number" 
+              class="form-control" 
+              id="edadNuevo" 
+              [(ngModel)]="nuevoUsuario.edad"
+              name="edad"
+              placeholder="Ingrese la edad"
+              min="1"
+              max="120"
+              required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-0 bg-light">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModalCrear()">
+          <i class="bi bi-x-circle me-1"></i>Cancelar
+        </button>
+        <button type="button" class="btn btn-primary" (click)="guardarNuevoUsuario()" [disabled]="!formularioCrear.valid || correoInvalidoCrear">
+          <i class="bi bi-check-circle me-1"></i>Guardar Usuario
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="mostrarModalCrear" *ngIf="mostrarModalCrear"></div>
+
+<!-- Modal de Edición -->
+<div class="modal fade" [class.show]="mostrarModalEdicion" [style.display]="mostrarModalEdicion ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <h5 class="modal-title">
+          <i class="bi bi-pencil-square me-2"></i>Editar Usuario
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModal()"></button>
+      </div>
+      <div class="modal-body p-4" *ngIf="usuarioEditando">
+        <form>
+          <div class="mb-3">
+            <label for="nombre" class="form-label fw-semibold">
+              <i class="bi bi-person me-2 text-primary"></i>Nombre Completo
+            </label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="nombre" 
+              [(ngModel)]="usuarioEditando.nombre"
+              name="nombre"
+              placeholder="Ingrese el nombre completo"
+              required>
+          </div>
+          <div class="mb-3">
+            <label for="correo" class="form-label fw-semibold">
+              <i class="bi bi-envelope me-2 text-primary"></i>Correo Electrónico
+            </label>
+            <input 
+              type="email" 
+              class="form-control" 
+              [class.is-invalid]="correoInvalidoEditar"
+              id="correo" 
+              [(ngModel)]="usuarioEditando.correo"
+              name="correo"
+              placeholder="ejemplo@correo.com"
+              (blur)="validarCorreoEditar()"
+              required>
+            <div class="invalid-feedback" *ngIf="correoInvalidoEditar">
+              Por favor ingresa un correo electrónico válido
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="edad" class="form-label fw-semibold">
+              <i class="bi bi-calendar me-2 text-primary"></i>Edad
+            </label>
+            <input 
+              type="number" 
+              class="form-control" 
+              id="edad" 
+              [(ngModel)]="usuarioEditando.edad"
+              name="edad"
+              placeholder="Ingrese la edad"
+              min="1"
+              max="120"
+              required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-0 bg-light">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">
+          <i class="bi bi-x-circle me-1"></i>Cancelar
+        </button>
+        <button type="button" class="btn btn-primary" (click)="guardarEdicion()" [disabled]="correoInvalidoEditar">
+          <i class="bi bi-check-circle me-1"></i>Guardar Cambios
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="mostrarModalEdicion" *ngIf="mostrarModalEdicion"></div>
