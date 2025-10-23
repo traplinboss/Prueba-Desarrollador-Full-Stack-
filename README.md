@@ -48,7 +48,7 @@ Antes de comenzar, asegúrate de tener instalado:
 
 ```bash
 # Si tienes Git instalado
-git clone <url-del-repositorio>
+git clone https://github.com/traplinboss/Prueba-Desarrollador-Full-Stack-.git
 
 # O simplemente descarga y descomprime el ZIP del proyecto
 ```
